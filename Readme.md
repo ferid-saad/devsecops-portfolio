@@ -32,7 +32,7 @@ Ce projet est une réinterprétation moderne et interactive du CV de **Ferid Saa
 ### Installation et Lancement
 ```bash
 # 1. Cloner la branche 'portfilio'
-git clone -b portfilio https://github.com/ferid-saad/TP1-Dep-App-CI-CD.git
+git clone -b portfilio https://github.com/ferid-saad/devsecops-portfolio.git
 cd TP1-Dep-App-CI-CD
 
 # 2. Installer les dépendances
@@ -112,7 +112,7 @@ TP1-Dep-App-CI-CD/
 ├── package.json             # Dépendances et scripts du projet
 └── tsconfig.json            # Configuration TypeScript stricte
 ```
-
+![devsecops-portfolio](images/portfolio-nextjs.png)
 ---
 
 ## 🔄 Intégration CI/CD (Jenkins & GitHub)
@@ -125,6 +125,65 @@ Ce projet est prêt pour être intégré dans un pipeline Jenkins CI/CD :
 5. **Étape 5 : Déploiement** : Mise à jour du conteneur sur le serveur cible.
 
 ---
+## VI. Premier pipeline Jenkins
+Jenkinsfile
+````
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+    }
+}
+````
+
+![pipeline-success](images/pipeline-devsecops-portfolio.png)
+
+### 23- Ajoutez au pipeline une étape permettant d'installer les dépendances du projet Next.js.
+
+Nouveau Jenkinsfile
+````
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'node -v'
+                sh 'npm -v'
+                sh 'npm ci'
+            }
+        }
+    }
+}
+````
+![pipeline-install-dependecies](images/pipeline-install-dependencies.png)
+
+
+## Étape 24 : build de l'application
+
+Ajout du stage `Build` :
+
+```groovy
+stage('Build') {
+    steps {
+        sh 'npm run build'
+    }
+}
+```
+
+![Résultat du build](docs/screenshots/etape-24-build.png)
+
 
 ## 👤 Auteur
 
