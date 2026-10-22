@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from '@/components/Navbar';
-import Hero from '@/components/Hero';
+import Header from '@/components/Header';
+import About from '@/components/About';
 import DevSecOpsTerminal from '@/components/DevSecOpsTerminal';
-import SkillsMatrix from '@/components/SkillsMatrix';
-import ProjectsSection from '@/components/ProjectsSection';
+import Skills from '@/components/Skills';
+import Projects from '@/components/Projects';
 import TimelineSection from '@/components/TimelineSection';
-import ContactSection from '@/components/ContactSection';
+import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import { CheckCircle2 } from 'lucide-react';
 
@@ -27,17 +27,30 @@ export default function HomePage() {
 
   return (
     <>
-      <Navbar onPrintCV={handlePrintCV} />
+      {/* 19 - Header réutilisable */}
+      <Header onPrintCV={handlePrintCV} showSectionLinks={true} />
 
       <main>
-        <Hero onPrintCV={handlePrintCV} onShowToast={showToast} />
+        {/* 19 - About (Présentation & Profil) */}
+        <About onPrintCV={handlePrintCV} onShowToast={showToast} />
+
+        {/* Terminal interactif DevSecOps */}
         <DevSecOpsTerminal />
-        <SkillsMatrix />
-        <ProjectsSection />
+
+        {/* 19 - Skills (Compétences & Technologies) */}
+        <Skills />
+
+        {/* 19 - Projects (Réalisations avec liens vers pages dédiées) */}
+        <Projects />
+
+        {/* Parcours (Expériences, Diplômes & Certifications) */}
         <TimelineSection />
-        <ContactSection onShowToast={showToast} />
+
+        {/* 19 - Contact (Coordonnées & Formulaire) */}
+        <Contact onShowToast={showToast} />
       </main>
 
+      {/* 19 - Footer réutilisable */}
       <Footer />
 
       {/* Floating Toast Notification */}
