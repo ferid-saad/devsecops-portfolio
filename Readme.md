@@ -182,7 +182,7 @@ stage('Build') {
 }
 ```
 
-![Résultat du build](docs/screenshots/etape-24-build.png)
+![Résultat du build](images/pipeline-build.png)
 
 
 ## 👤 Auteur
