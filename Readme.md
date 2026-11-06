@@ -184,6 +184,30 @@ stage('Build') {
 
 ![Résultat du build](images/pipeline-build.png)
 
+# Activité 3 : Ansible, API Express, variables d'environnement et Docker
+
+## VII. Automatisation avec Ansible
+### Étape 25 : installation d'Ansible
+![Version d'Ansible](images/etape-25-ansible-version.png)
+### Étape 26 : inventory et test de communication
+### Étape 27 : premier playbook
+### Étape 28 : installation de Docker avec Ansible
+
+## VIII. API Node.js / Express
+### Étape 29 : structure du projet et démarrage
+### Étapes 30 à 33 : routes de l'API
+### Étapes 34 et 35 : le frontend consomme l'API
+
+## IX. Variables d'environnement
+### Étape 36 : API_URL
+### Étape 37 : .env.example
+
+## X. Dockerisation
+### Étape 38 : Dockerfile du frontend
+### Étape 39 : Dockerfile de l'API
+### Étape 40 : construction des images
+### Étape 41 : Docker Compose
+### Étape 42 : communication frontend et API
 
 ## 👤 Auteur
 
