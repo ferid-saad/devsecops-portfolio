@@ -187,10 +187,106 @@ stage('Build') {
 # Activité 3 : Ansible, API Express, variables d'environnement et Docker
 
 ## VII. Automatisation avec Ansible
-### Étape 25 : installation d'Ansible
+---
+
+# Activité 3 : Ansible, API Express, variables d'environnement et Docker
+
+## VII. Automatisation avec Ansible
+
+### Architecture
+
+| Machine | Rôle | Adresse IP |
+|---|---|---|
+| `admin-ansible` | VM d'administration (nœud de contrôle, Ansible installé) | réseau 192.168.50.0/24 |
+| `server-1` (webserver) | Serveur Ubuntu géré | 192.168.50.89 |
+| `server-2` (ftpserver) | Serveur Ubuntu géré | 192.168.50.90 |
+
+Ansible fonctionne sans agent : il est installé uniquement sur `admin-ansible` et se connecte aux serveurs en SSH.
+
+### Étape 25 : installation d'Ansible sur la VM d'administration
+
+```bash
+sudo apt update
+sudo apt install -y ansible-core
+ansible --version
+```
+
 ![Version d'Ansible](images/etape-25-ansible-version.png)
+
 ### Étape 26 : inventory et test de communication
-### Étape 27 : premier playbook
+
+**1. Authentification SSH par clé** (depuis `admin-ansible`) :
+
+```bash
+ssh-keygen -t ed25519 -C "ansible-admin"
+ssh-copy-id ferid@192.168.50.89
+ssh-copy-id ferid@192.168.50.90
+ssh ferid@192.168.50.89 hostname
+ssh ferid@192.168.50.90 hostname
+```
+
+La clé privée reste sur la VM d'administration, seule la clé publique est copiée sur les serveurs.
+
+**2. Fichier `ansible/ansible.cfg`** :
+
+```ini
+[defaults]
+inventory = ./inventory
+```
+
+**3. Fichier `ansible/inventory`** :
+
+```ini
+[servers]
+server-1 ansible_host=192.168.50.89 ansible_user=ferid
+server-2 ansible_host=192.168.50.90 ansible_user=ferid
+```
+
+**4. Test de communication** (depuis le dossier `ansible/`) :
+
+```bash
+ansible all -m ping
+```
+
+Les deux serveurs répondent `SUCCESS` avec `pong`, ce qui valide en même temps le SSH, l'utilisateur, la clé et Python.
+
+![Résultat de ansible all -m ping](images/etape-26-ping.png)
+### Étape 27 : premier playbook, installation de packages
+
+Playbook `ansible/install-packages.yml` :
+
+```yaml
+---
+- name: Installer des packages de base
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Mettre à jour le cache apt
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Installer git, curl et tree
+      ansible.builtin.apt:
+        name:
+          - git
+          - curl
+          - tree
+        state: present
+```
+
+Exécution depuis la VM d'administration :
+
+```bash
+ansible-playbook install-packages.yml -K
+```
+
+![Exécution du playbook](images/etape-27-packages.png)
+
+Un second lancement ne modifie rien (`changed=0`) : le playbook est idempotent.
+
+![Second lancement](images/etape-27-idempotence.png)
 ### Étape 28 : installation de Docker avec Ansible
 
 ## VIII. API Node.js / Express
