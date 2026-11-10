@@ -287,7 +287,96 @@ ansible-playbook install-packages.yml -K
 Un second lancement ne modifie rien (`changed=0`) : le playbook est idempotent.
 
 ![Second lancement](images/etape-27-idempotence.png)
-### Étape 28 : installation de Docker avec Ansible
+### Étape 28 : installation automatique de Docker
+
+Playbook `ansible/install-docker.yml`, exécuté sur le groupe `docker_hosts` (une VM neuve sans Docker) :
+
+```yaml
+---
+- name: Installer Docker
+  hosts: docker_hosts
+  become: true
+
+  tasks:
+    - name: Installer les prérequis
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+        state: present
+        update_cache: true
+
+    - name: Créer le dossier des clés APT
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Télécharger la clé GPG de Docker
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: "0644"
+
+    - name: Ajouter le dépôt Docker
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        filename: docker
+        state: present
+
+    - name: Installer Docker Engine
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+        update_cache: true
+
+    - name: Démarrer et activer Docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Autoriser l'utilisateur à utiliser Docker
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: true
+
+    - name: Lire la version de Docker
+      ansible.builtin.command: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Afficher la version de Docker
+      ansible.builtin.debug:
+        msg: "{{ docker_version.stdout }}"
+```
+
+Exécution depuis la VM d'administration :
+
+```bash
+ansible-playbook install-docker.yml
+```
+
+![Exécution du playbook Docker](images/etape-28-docker.png)
+
+Résultat de `docker --version` sur la VM cible :
+
+```bash
+ansible docker_hosts -a "docker --version"
+```
+
+![Version de Docker](images/etape-28-docker-version.png)
+
+Installation de Docker à partir de playbook sur server-3
+
+![Docker est installé](images/etape-28-valide.png)
+
 
 ## VIII. API Node.js / Express
 ### Étape 29 : structure du projet et démarrage
