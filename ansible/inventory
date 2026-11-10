@@ -1,9 +1,6 @@
 [servers]
 server-1 ansible_host=192.168.50.89 ansible_user=ferid
 server-2 ansible_host=192.168.50.90 ansible_user=ferid
+
 [docker_hosts]
 server-3 ansible_host=192.168.50.91 ansible_user=ferid
-
-[defaults]
-inventory = ./inventory
-interpreter_python = auto_silent
