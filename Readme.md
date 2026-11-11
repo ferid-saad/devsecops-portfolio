@@ -379,7 +379,34 @@ Installation de Docker à partir de playbook sur server-3
 
 
 ## VIII. API Node.js / Express
-### Étape 29 : structure du projet et démarrage
+
+### Étape 29 : le dossier `api`
+
+L'API est une application Node.js / Express indépendante du frontend, avec son propre `package.json`.
+
+Structure du projet :
+
+```
+devsecops-portfolio/
+├── api/
+│   ├── package.json
+│   ├── package-lock.json
+│   └── server.js
+├── app/
+├── components/
+├── data/
+└── ...
+```
+
+Lancement de l'API seule :
+
+```bash
+cd api
+npm install
+npm start
+```
+
+![API démarrée](images/etape-29-api-demarree.png)et démarrage
 ### Étapes 30 à 33 : routes de l'API
 ### Étapes 34 et 35 : le frontend consomme l'API
 
