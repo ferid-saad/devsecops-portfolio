@@ -407,7 +407,40 @@ npm start
 ```
 
 ![API démarrée](images/etape-29-api-demarree.png)et démarrage
-### Étapes 30 à 33 : routes de l'API
+### Étape 30 : route `GET /api/health`
+
+Retourne l'état de l'API.
+
+```js
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "L'API fonctionne",
+    uptime: Math.round(process.uptime()),
+    timestamp: new Date().toISOString(),
+  });
+});
+```
+
+![Route health](images/etape-30-health.png)
+
+### Étape 31 : route `GET /api/profile`
+
+Retourne les informations principales du Portfolio au format JSON (données dans `api/data/profile.js`).
+
+![Route profile](images/etape-31-profile.png)
+
+### Étape 32 : route `GET /api/projects`
+
+Retourne la liste des projets (données dans `api/data/projects.js`).
+
+![Route projects](images/etape-32-projects.png)
+
+### Étape 33 : route `GET /api/skills`
+
+Retourne la liste des compétences (données dans `api/data/skills.js`).
+
+![Route skills](images/etape-33-skills.png)
 ### Étapes 34 et 35 : le frontend consomme l'API
 
 ## IX. Variables d'environnement
