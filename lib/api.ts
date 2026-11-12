@@ -1,9 +1,14 @@
 import { projectsData, type Project } from '@/data/projects';
 import { skillsCategories, type SkillCategory } from '@/data/skills';
 
-const API_URL = process.env.API_URL ?? 'http://localhost:4000';
+const API_URL = process.env.API_URL;
 
 async function fetchFromApi<T>(path: string, fallback: T): Promise<T> {
+  if (!API_URL) {
+    console.warn(`[api] API_URL non défini, données locales utilisées pour ${path}`);
+    return fallback;
+  }
+
   try {
     const res = await fetch(`${API_URL}${path}`, { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -13,7 +18,6 @@ async function fetchFromApi<T>(path: string, fallback: T): Promise<T> {
     return fallback;
   }
 }
-
 export const getProjects = () =>
   fetchFromApi<Project[]>('/api/projects', projectsData);
 

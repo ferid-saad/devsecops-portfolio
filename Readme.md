@@ -458,9 +458,46 @@ Comme pour les projets, la page d'accueil appelle `GET /api/skills` côté serve
 
 ![Compétences affichées depuis l'API](images/etape-35-front-competences.png)
 
-## IX. Variables d'environnement
-### Étape 36 : API_URL
-### Étape 37 : .env.example
+## IX. Variables d'environnement et configuration
+
+### Étape 36 : variable `API_URL`
+
+L'URL de l'API est lue dans la variable d'environnement `API_URL` (`lib/api.ts`), définie dans `.env.local` en développement :
+
+```
+API_URL=http://localhost:4000
+```
+
+**Pourquoi ne pas coder l'URL en dur ?**
+
+- L'adresse change selon l'environnement : `http://localhost:4000` en local, `http://api:4000` dans Docker Compose, une autre adresse en production. Avec une variable, le même code et la même image Docker fonctionnent partout.
+- On change la configuration sans modifier le code, sans recompiler et sans nouveau commit.
+- La configuration est séparée du code source : les valeurs propres à une machine ou à un secret (clés, mots de passe) ne se retrouvent jamais dans le dépôt Git.
+- Le principe est celui des applications « 12 factors », la norme des déploiements conteneurisés.
+
+Si `API_URL` n'est pas défini ou que l'API est injoignable, le site utilise ses données locales et le signale dans les logs.
+
+### Étape 37 : fichier `.env.example`
+
+Le fichier `.env.example` liste les variables nécessaires, sans secret. Pour configurer son environnement :
+
+```bash
+cp .env.example .env.local
+```
+
+Contenu de `.env.example` :
+
+```
+# URL de l'API Express, lue côté serveur par Next.js
+# En local : http://localhost:4000
+# Dans Docker Compose : http://api:4000
+API_URL=http://localhost:4000
+
+# Port d'écoute de l'API Express (utilisé par api/server.js)
+PORT=4000
+```
+
+Le fichier `.env.local`, qui contient la configuration réelle de chaque machine, n'est jamais versionné.
 
 ## X. Dockerisation
 ### Étape 38 : Dockerfile du frontend
