@@ -11,12 +11,13 @@ import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import { CheckCircle2 } from 'lucide-react';
 import type { Project } from '@/data/projects';
+import type { SkillCategory } from '@/data/skills';
 
 interface HomeClientProps {
   projects: Project[];
 }
 
-export default function HomeClient({ projects }: HomeClientProps) {
+export default function HomeClient({ projects,skills }: HomeClientProps) {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -43,7 +44,7 @@ export default function HomeClient({ projects }: HomeClientProps) {
         <DevSecOpsTerminal />
 
         {/* 19 - Skills (Compétences & Technologies) */}
-        <Skills />
+        <Skills skills={skills} />
 
         {/* 19 - Projects (Réalisations avec liens vers pages dédiées) */}
         <Projects projects={projects} />

@@ -2,11 +2,14 @@
 
 import React from 'react';
 import { ShieldCheck, Server, Code, Cpu, Wrench } from 'lucide-react';
-import { skillsCategories } from '@/data/skills';
+import type { SkillCategory } from '@/data/skills';
 
-export default function Skills() {
-  const getIcon = (name: string) => {
-    switch (name) {
+interface SkillsProps {
+  skills: SkillCategory[];
+}
+
+export default function Skills({ skills }: SkillsProps) {
+  const getIcon = (name: string) => {    switch (name) {
       case 'ShieldCheck':
         return <ShieldCheck size={18} />;
       case 'Server':
@@ -35,7 +38,7 @@ export default function Skills() {
         </div>
 
         <div className="skills-categories-grid">
-          {skillsCategories.map((category) => (
+          {skills.map((category) => (
             <div key={category.title} className="glass-panel skill-category-card">
               <div className="category-header">
                 <div className="category-icon">{getIcon(category.iconName)}</div>

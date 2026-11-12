@@ -452,6 +452,12 @@ const res = await fetch(`${API_URL}/api/projects`, { cache: 'no-store' });
 
 ![Projets affichés depuis l'API](images/etape-34-front-projets.png)
 
+## Étape 35 : le frontend récupère les compétences depuis l'API
+
+Comme pour les projets, la page d'accueil appelle `GET /api/skills` côté serveur (`getSkills()` dans `lib/api.ts`) et transmet la liste au composant `Skills`. Si l'API est indisponible, le site utilise `data/skills.ts`.
+
+![Compétences affichées depuis l'API](images/etape-35-front-competences.png)
+
 ## IX. Variables d'environnement
 ### Étape 36 : API_URL
 ### Étape 37 : .env.example
