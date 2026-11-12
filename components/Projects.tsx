@@ -3,9 +3,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { FolderGit2, CheckCircle2, ExternalLink, Github, ArrowRight, ShieldCheck } from 'lucide-react';
-import { projectsData, Project } from '@/data/projects';
+import type { Project } from '@/data/projects';
 
-export default function Projects() {
+interface ProjectsProps {
+  projects: Project[];
+}
+
+export default function Projects({ projects }: ProjectsProps) {
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
   const categories = [
@@ -17,8 +21,8 @@ export default function Projects() {
   ];
 
   const filteredProjects = activeCategory === 'all'
-    ? projectsData
-    : projectsData.filter((p) => p.category === activeCategory);
+  ? projects
+  : projects.filter((p) => p.category === activeCategory);
 
   return (
     <section id="projects" className="section-block">

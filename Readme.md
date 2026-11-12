@@ -441,7 +441,16 @@ Retourne la liste des projets (données dans `api/data/projects.js`).
 Retourne la liste des compétences (données dans `api/data/skills.js`).
 
 ![Route skills](images/etape-33-skills.png)
-### Étapes 34 et 35 : le frontend consomme l'API
+
+## Étape 34 : le frontend récupère les projets depuis l'API
+
+La page d'accueil (`app/page.tsx`) est un composant serveur qui appelle l'API Express via `lib/api.ts`, puis transmet la liste des projets au composant client `HomeClient`. Si l'API est indisponible, le site utilise les données locales de `data/projects.ts` pour rester disponible.
+
+```ts
+const res = await fetch(`${API_URL}/api/projects`, { cache: 'no-store' });
+```
+
+![Projets affichés depuis l'API](images/etape-34-front-projets.png)
 
 ## IX. Variables d'environnement
 ### Étape 36 : API_URL
