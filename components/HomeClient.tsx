@@ -15,9 +15,10 @@ import type { SkillCategory } from '@/data/skills';
 
 interface HomeClientProps {
   projects: Project[];
+  skills: SkillCategory[];
 }
 
-export default function HomeClient({ projects,skills }: HomeClientProps) {
+export default function HomeClient({ projects, skills }: HomeClientProps) {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
