@@ -1,21 +1,25 @@
 services:
-  portfolio:
+  api:
     build:
-      context: .
-      dockerfile: Dockerfile
-    image: portfolio-nextjs:latest
-    container_name: cv-nextjs
+      context: ./api
+    image: devsecops-api
     ports:
-      - "8081:8080"
+      - "127.0.0.1:4000:4000"
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
+
+  frontend:
+    build:
+      context: .
+    image: devsecops-portfolio
+    ports:
+      - "3000:8080"
     environment:
-      - NODE_ENV=production
-      - PORT=8080
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
+      - API_URL=http://api:4000
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true

@@ -6,3 +6,8 @@ node_modules
 README.md
 cv-ferid-saad
 images
+api/node_modules
+Jenkinsfile
+docker-compose.yml
+npm-debug.log*
+ansible
