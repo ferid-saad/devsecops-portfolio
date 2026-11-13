@@ -635,7 +635,21 @@ docker compose ps
 
 ![docker compose ps](images/etape-41-compose-ps.png)
 
-### Étape 42 : communication frontend et API
+### Étape 42 : communication entre le frontend et l'API
+
+Docker Compose crée un réseau commun aux deux services. Le conteneur `frontend` appelle l'API avec le nom du service (`API_URL=http://api:4000`), sans aucune adresse IP.
+
+Vérification depuis le conteneur du frontend :
+
+```bash
+docker compose exec frontend printenv API_URL
+docker compose exec frontend wget -qO- http://api:4000/api/health
+docker compose logs --tail 10 api
+```
+
+Preuve que les données viennent de l'API : le titre d'un projet a été modifié dans `api/data/projects.js`, seule l'image de l'API a été reconstruite (`docker compose up -d --build api`), et le nouveau titre s'affiche dans le portfolio sans reconstruire le frontend.
+
+![Portfolio avec les données de l'API](images/etape-42-front-api-docker.png)
 
 ## 👤 Auteur
 
