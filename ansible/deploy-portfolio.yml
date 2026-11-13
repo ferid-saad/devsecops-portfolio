@@ -5,14 +5,27 @@
   vars:
     app_dir: /opt/devsecops-portfolio
   tasks:
-    - name: Installer les paquets nécessaires
+    - name: Installer rsync
+      ansible.builtin.apt:
+        name: rsync
+        state: present
+        update_cache: true
+        lock_timeout: 300
+
+    - name: Vérifier si Docker Compose est déjà disponible
+      ansible.builtin.command: docker compose version
+      register: docker_check
+      changed_when: false
+      failed_when: false
+
+    - name: Installer Docker et Compose (dépôts Ubuntu) si absents
       ansible.builtin.apt:
         name:
           - docker.io
           - docker-compose-v2
-          - rsync
         state: present
-        update_cache: true
+        lock_timeout: 300
+      when: docker_check.rc != 0
 
     - name: Démarrer et activer Docker
       ansible.builtin.service:
@@ -29,14 +42,15 @@
 
     - name: Copier le projet sur la VM
       ansible.posix.synchronize:
-        src: ../
+        src: "{{ playbook_dir }}/../"
         dest: "{{ app_dir }}/"
         rsync_opts:
-          - "--exclude=.git"
+          - "--exclude=/.git"
           - "--exclude=node_modules"
           - "--exclude=.next"
-          - "--exclude=ansible"
-          - "--exclude=.vagrant"
+          - "--exclude=/ansible"
+          - "--exclude=/.vagrant"
+          - "--exclude=/images"
       become: false
 
     - name: Lancer le Portfolio avec Docker Compose
