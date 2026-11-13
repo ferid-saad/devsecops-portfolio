@@ -651,6 +651,25 @@ Preuve que les données viennent de l'API : le titre d'un projet a été modifi�
 
 ![Portfolio avec les données de l'API](images/etape-42-front-api-docker.png)
 
+## Étape 43 : déploiement automatique du Portfolio avec Ansible
+
+Playbook : `ansible/deploy-portfolio.yml`. Il copie le projet sur la VM cible
+(`/opt/devsecops-portfolio`), vérifie que Docker Compose est présent puis lance
+`docker compose up --build`.
+
+Commande utilisée depuis la VM d'administration :
+
+    cd ~/devsecops-portfolio/ansible
+    ansible-playbook deploy-portfolio.yml --limit server-3 --ask-become-pass
+
+Résultat de l'exécution :
+
+![Playbook exécuté](images/etape-43-playbook.png)
+
+Portfolio accessible sur la VM cible :
+
+![Portfolio déployé](images/etape-43-portfolio.png)
+
 ## 👤 Auteur
 
 **Ferid Saad**

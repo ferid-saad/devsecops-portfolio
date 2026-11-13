@@ -1,0 +1,46 @@
+---
+- name: Déployer le DevSecOps Portfolio avec Docker Compose
+  hosts: all
+  become: true
+  vars:
+    app_dir: /opt/devsecops-portfolio
+  tasks:
+    - name: Installer les paquets nécessaires
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - docker-compose-v2
+          - rsync
+        state: present
+        update_cache: true
+
+    - name: Démarrer et activer Docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Créer le dossier de l'application
+      ansible.builtin.file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        mode: "0755"
+
+    - name: Copier le projet sur la VM
+      ansible.posix.synchronize:
+        src: ../
+        dest: "{{ app_dir }}/"
+        rsync_opts:
+          - "--exclude=.git"
+          - "--exclude=node_modules"
+          - "--exclude=.next"
+          - "--exclude=ansible"
+          - "--exclude=.vagrant"
+      become: false
+
+    - name: Lancer le Portfolio avec Docker Compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ app_dir }}"
+        build: always
+        state: present
