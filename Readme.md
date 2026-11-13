@@ -500,9 +500,99 @@ PORT=4000
 Le fichier `.env.local`, qui contient la configuration réelle de chaque machine, n'est jamais versionné.
 
 ## X. Dockerisation
+## X. Dockerisation frontend + API
+
 ### Étape 38 : Dockerfile du frontend
+
+Image multi-stage (dépendances, compilation, exécution) basée sur `node:20-alpine`. Le mode `standalone` de Next.js limite l'image finale aux fichiers nécessaires, et le conteneur s'exécute avec l'utilisateur non privilégié `nextjs` (UID 1001).
+
+```dockerfile
+# ==========================================
+# Multi-stage Dockerfile pour Next.js 15
+# Portfolio DevSecOps - Ferid Saad
+# Sécurité : non-root user, image Alpine légère
+# ==========================================
+
+# Étape 1 : Dépendances
+FROM node:20-alpine AS deps
+WORKDIR /app
+RUN apk add --no-cache libc6-compat
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+# Étape 2 : Build de l'application Next.js
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+RUN npm run build
+
+# Étape 3 : Image de production finale (Runner minimal et sécurisé)
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=8080
+ENV HOSTNAME="0.0.0.0"
+
+# Sécurité : Création d'un groupe et d'un utilisateur non-root
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Copie des fichiers publics et des artefacts standalone
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Bascule vers l'utilisateur non-root
+USER nextjs
+
+EXPOSE 8080
+
+# Healthcheck Docker conforme aux exigences DevSecOps
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:8080/projects > /dev/null || exit 1
+  
+CMD ["node", "server.js"]
+
+```
+
 ### Étape 39 : Dockerfile de l'API
+
+L'API est une application Node.js simple : seules les dépendances de production sont installées, l'application tourne sous l'utilisateur `node`, et un `HEALTHCHECK` interroge la route `/api/health`.
+
+```dockerfile
+FROM node:20-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=4000
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+COPY . .
+
+USER node
+EXPOSE 4000
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:4000/api/health || exit 1
+
+CMD ["node", "server.js"]
+```
+
 ### Étape 40 : construction des images
+
+```bash
+docker build -t devsecops-portfolio .
+docker build -t devsecops-api ./api
+docker images --filter "reference=devsecops-*"
+```
+
+![Images Docker](images/etape-40-images.png)
 ### Étape 41 : Docker Compose
 ### Étape 42 : communication frontend et API
 
