@@ -593,7 +593,48 @@ docker images --filter "reference=devsecops-*"
 ```
 
 ![Images Docker](images/etape-40-images.png)
+
 ### Étape 41 : Docker Compose
+
+Un seul fichier démarre les deux services, `api` et `frontend`, sur un réseau commun. Le frontend atteint l'API par son nom de service (`http://api:4000`), passé dans la variable `API_URL`, et ne démarre que lorsque l'API est `healthy`.
+
+```yaml
+services:
+  api:
+    build:
+      context: ./api
+    image: devsecops-api
+    ports:
+      - "127.0.0.1:4000:4000"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  frontend:
+    build:
+      context: .
+    image: devsecops-portfolio
+    ports:
+      - "3000:8080"
+    environment:
+      - API_URL=http://api:4000
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+```
+
+Démarrage et état des services :
+
+```bash
+docker compose up -d --build
+docker compose ps
+```
+
+![docker compose ps](images/etape-41-compose-ps.png)
+
 ### Étape 42 : communication frontend et API
 
 ## 👤 Auteur
