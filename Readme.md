@@ -713,6 +713,61 @@ Envoi réussi :
 
 ![Formulaire de contact](images/etape-47-formulaire-envoi.png)
 
+## Étape 48 : validation stricte des données avec Zod
+
+La route `POST /api/contact` valide désormais chaque requête avec la bibliothèque
+[Zod](https://zod.dev). Le schéma est défini dans `api/validation/contact.js`.
+Toute donnée qui ne respecte pas le schéma est refusée par l'API avec une erreur `400 Bad Request`,
+quel que soit le client (formulaire du site, `curl`, script…). La validation côté serveur est
+indispensable : le formulaire peut être contourné, l'API non.
+
+### Règles appliquées
+
+| Champ     | Règle                                              |
+|-----------|----------------------------------------------------|
+| `name`    | texte, 2 à 100 caractères, espaces superflus retirés |
+| `email`   | adresse e-mail valide, 254 caractères maximum      |
+| `subject` | optionnel, 150 caractères maximum                  |
+| `message` | texte, 10 à 2000 caractères                        |
+| autres    | **refusés** (schéma strict, protection contre l'ajout de champs inattendus) |
+
+### Exemple de requête refusée
+
+E-mail invalide, message trop court et champ non prévu (`role`) :
+
+```bash
+curl -i -X POST http://localhost:4000/api/contact \
+  -H "Content-Type: application/json" \
+  -d '{"name":"F","email":"pas-un-email","message":"court","role":"admin"}'
+```
+
+Réponse de l'API (`400 Bad Request`) :
+
+```json
+{
+  "success": false,
+  "error": "Données invalides",
+  "details": [
+    { "field": "name", "message": "Le nom doit contenir au moins 2 caractères" },
+    { "field": "email", "message": "Adresse e-mail invalide" },
+    { "field": "message", "message": "Le message doit contenir au moins 10 caractères" },
+    { "field": "body", "message": "Unrecognized key: \"role\"" }
+  ]
+}
+```
+
+![Requête refusée par l'API](images/etape-48-requete-refusee.png)
+
+### Une requête valide est toujours acceptée
+
+```bash
+curl -i -X POST http://localhost:4000/api/contact \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Ferid Saad","email":"ferid@example.com","message":"Message de test valide"}'
+```
+
+Réponse : `201 Created`.
+
 ## 👤 Auteur
 
 **Ferid Saad**

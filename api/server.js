@@ -6,7 +6,7 @@ const skills = require("./data/skills");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-
+const { contactSchema } = require("./validation/contact");
 app.use(cors());
 app.use(express.json());
 
@@ -52,15 +52,18 @@ app.get("/api/projects/:id", (req, res) => {
 app.get("/api/skills", (req, res) => {
   res.json(skills);
 });
-// Étape 46
+// Étape 46 + 48 : validation stricte avec Zod
 app.post("/api/contact", (req, res) => {
-  const { name, email, message } = req.body ?? {};
+  const result = contactSchema.safeParse(req.body);
 
-  // Contrôle minimal provisoire : la validation stricte arrive à l'étape 48 (Zod)
-  if (!name || !email || !message) {
+  if (!result.success) {
     return res.status(400).json({
       success: false,
-      error: "Les champs name, email et message sont obligatoires",
+      error: "Données invalides",
+      details: result.error.issues.map((issue) => ({
+        field: issue.path.join(".") || "body",
+        message: issue.message,
+      })),
     });
   }
 
