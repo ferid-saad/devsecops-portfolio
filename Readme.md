@@ -679,6 +679,17 @@ le fichier est créer mais probleme avec la virtualisation imbriquée à complet
 Route ajoutée dans `api/server.js` : elle reçoit les données du formulaire de contact
 et renvoie une confirmation.
 
+## Étape 47 : formulaire de contact connecté à l'API
+
+Le formulaire (`components/Contact.tsx`) envoie ses données à `POST /api/contact` du frontend.
+Une route serveur Next.js (`app/api/contact/route.ts`) transmet la requête à l'API Express
+via `API_URL`. L'API reste ainsi privée (publiée uniquement sur 127.0.0.1) et le navigateur
+n'a pas à connaître son adresse.
+
+Envoi réussi :
+
+![Formulaire de contact](images/etape-47-formulaire-envoi.png)
+
 Exemple de requête :
 
 ```bash

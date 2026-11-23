@@ -28,7 +28,7 @@ export default function Contact({ onShowToast }: ContactProps) {
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formState.name || !formState.email || !formState.message) {
       if (onShowToast) onShowToast('Veuillez remplir tous les champs obligatoires.');
@@ -38,24 +38,40 @@ export default function Contact({ onShowToast }: ContactProps) {
     setIsSubmitting(true);
 
     try {
-      const confetti = (await import('canvas-confetti')).default;
-      confetti({
-        particleCount: 80,
-        spread: 60,
-        origin: { y: 0.8 },
-        colors: ['#00d2df', '#0e7c86', '#14b8a6', '#ffffff']
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formState),
       });
-    } catch {
-      // Confetti fallback
-    }
+      const data = await res.json().catch(() => ({}));
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+      if (!res.ok) {
+        throw new Error(data.error || `Erreur ${res.status}`);
+      }
+
+      try {
+        const confetti = (await import('canvas-confetti')).default;
+        confetti({
+          particleCount: 80,
+          spread: 60,
+          origin: { y: 0.8 },
+          colors: ['#00d2df', '#0e7c86', '#14b8a6', '#ffffff']
+        });
+      } catch {
+        // Confetti fallback
+      }
+
       setIsSubmitted(true);
       if (onShowToast) onShowToast('Votre message a été transmis avec succès !');
       setFormState({ name: '', email: '', subject: '', message: '' });
       setTimeout(() => setIsSubmitted(false), 5000);
-    }, 600);
+    } catch (error) {
+      if (onShowToast) {
+        onShowToast(error instanceof Error ? error.message : "Impossible d'envoyer le message.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
