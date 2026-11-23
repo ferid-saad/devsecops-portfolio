@@ -52,7 +52,27 @@ app.get("/api/projects/:id", (req, res) => {
 app.get("/api/skills", (req, res) => {
   res.json(skills);
 });
+// Étape 46
+app.post("/api/contact", (req, res) => {
+  const { name, email, message } = req.body ?? {};
 
+  // Contrôle minimal provisoire : la validation stricte arrive à l'étape 48 (Zod)
+  if (!name || !email || !message) {
+    return res.status(400).json({
+      success: false,
+      error: "Les champs name, email et message sont obligatoires",
+    });
+  }
+
+  // On ne journalise pas le contenu du message ni l'e-mail (données personnelles)
+  console.log("Nouveau message de contact reçu");
+
+  res.status(201).json({
+    success: true,
+    message: "Message reçu, merci de votre contact",
+    receivedAt: new Date().toISOString(),
+  });
+});
 app.use((req, res) => {
   res.status(404).json({ error: "Route introuvable" });
 });

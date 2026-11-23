@@ -670,6 +670,37 @@ Portfolio accessible sur la VM cible :
 
 ![Portfolio déployé](images/etape-43-portfolio.png)
 
+## Etape 44-45:Vagrant
+
+le fichier est créer mais probleme avec la virtualisation imbriquée à completer
+
+## Étape 46 : route POST /api/contact
+
+Route ajoutée dans `api/server.js` : elle reçoit les données du formulaire de contact
+et renvoie une confirmation.
+
+Exemple de requête :
+
+```bash
+curl -i -X POST http://localhost:4000/api/contact \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Ferid Saad","email":"ferid@example.com","message":"Bonjour, ceci est un test"}'
+```
+
+Exemple de réponse (`201 Created`) :
+
+```json
+{
+  "success": true,
+  "message": "Message reçu, merci de votre contact",
+  "receivedAt": "2026-11-23T10:00:00.000Z"
+}
+```
+
+Une requête incomplète renvoie `400 Bad Request`. La validation stricte sera ajoutée à l'étape 48.
+
+![Test de la route contact](images/etape-46-contact-api.png)
+
 ## 👤 Auteur
 
 **Ferid Saad**
